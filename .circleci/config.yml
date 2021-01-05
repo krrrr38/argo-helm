@@ -14,6 +14,3 @@ workflows:
   workflow:
     jobs:
       - lint
-      - publish:
-          requires:
-            - lint
