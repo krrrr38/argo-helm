@@ -5,29 +5,9 @@ jobs:
       - image: gcr.io/kubernetes-charts-ci/test-image:v3.1.0
     steps:
       - checkout
-      - run: ct lint --config .circleci/chart-testing.yaml --lint-conf .circleci/lintconf.yaml --helm-repo-extra-args '--stable-repo-url=https://charts.helm.sh/stable'
-  # Technically this only needs to be run on master, but it's good to have it run on every PR
-  # so that it is regularly tested.
-  publish:
-    docker:
-      # We just need an image with `helm` on it. Handily we know of one already.
-      - image: gcr.io/kubernetes-charts-ci/test-image:v3.1.0
-    steps:
-      # install the additional keys needed to push to Github. Alex Collins owns these keys.
-      - add_ssh_keys
-      - run: git config --global user.email "nobody@circleci.com"
-      - run: git config --global user.name "Circle CI Build"
-      - checkout
-      - run: helm init --client-only
-      # Only actually publish charts on master.
-      - run: |
-          set -x
-          if [ "$CIRCLE_BRANCH" = "master" ]; then
-            export GIT_PUSH=true
-          else
-            export GIT_PUSH=false
-          fi
-          sh ./scripts/publish.sh
+      - run: helm init --stable-repo-url=https://charts.helm.sh/stable --client-only
+        working_directory: charts
+      - run: ct lint --config .circleci/chart-testing.yaml --lint-conf .circleci/lintconf.yaml
 workflows:
   version: 2
   workflow:
