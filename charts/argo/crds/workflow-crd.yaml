@@ -31,3 +31,13 @@ spec:
   - name: v1alpha1
     served: true
     storage: true
+    schema:
+      openAPIV3Schema:
+        properties:
+          spec:
+            x-kubernetes-preserve-unknown-fields: true
+            type: object
+          status:
+            x-kubernetes-preserve-unknown-fields: true
+            type: object
+        type: object
